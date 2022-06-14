@@ -134,6 +134,7 @@ impl<'a> Ford<'a> {
                 .ok_or_else(|| TranslationError::UnrecognizedItem(item.to_string()))?;
 
             let total_price = count * price;
+            let total_price = total_price.normalize();
 
             Ok(Some(format!(
                 "{intergalactic} {item} is {total_price} Credits"
