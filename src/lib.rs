@@ -1,8 +1,8 @@
 //! This crate provides a library for translating intergalactic numerals to Roman numerals.
 //!
 //! # Usage
-//! The primary interface is `Language`. `Language` provides functions to translate numerals
-//! and query prices of individual items.
+//! The primary interface is `Ford`. `Ford` can be queried to set translations
+//! and enquire about numbers and prices.
 //! ```
 //! // necessary imports
 //! use intra::prelude::*;
@@ -33,20 +33,4 @@ pub mod error;
 pub mod language;
 pub mod roman;
 
-#[allow(missing_docs)]
-pub mod prelude {
-    // re-export necessary items from std and other libraries
-    pub use hashbrown::HashMap;
-    pub use rust_decimal::Decimal;
-    pub use rust_decimal_macros::dec;
-    pub use std::borrow::Cow;
-
-    // re-export commonly used items from Intra
-    pub use crate::assistant::Ford;
-    pub use crate::language::Language;
-    pub use crate::roman::Roman;
-}
-
 pub use assistant::Ford;
-pub use language::Language;
-pub use roman::Roman;
