@@ -1,3 +1,5 @@
+//! A representation for standard roman numerals. Digits go up to M.
+
 use lazy_static::lazy_static;
 use regex::Regex;
 
