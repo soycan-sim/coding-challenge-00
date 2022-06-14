@@ -5,7 +5,7 @@
 //! and enquire about numbers and prices.
 //! ```
 //! // necessary imports
-//! use intra::prelude::*;
+//! use intra::Ford;
 //!
 //! // Create a new Ford instance.
 //! let mut ford = Ford::new();
@@ -22,10 +22,10 @@
 //! ford.query("pish pish Iron is 3910 Credits").unwrap();
 //!
 //! // Query the price...
-//! let price = lang.query(&price_set, "How many credits is glob glob Gold?").unwrap();
+//! let price = ford.query("How many credits is glob glob Gold?").unwrap();
 //!
 //! /// or simply query a number.
-//! let answer = lang.query(&price_set, "How much is pish tegj glob glob?").unwrap();
+//! let answer = ford.query("How much is pish tegj glob glob?").unwrap();
 //! ```
 
 #![warn(missing_docs)]

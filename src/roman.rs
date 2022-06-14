@@ -19,13 +19,13 @@ lazy_static! {
 ///
 /// # Examples
 /// ```
-/// use intra::Roman;
+/// use intra::roman::Roman;
 /// let roman = Roman::try_from("XLII").unwrap();
 /// assert_eq!(u32::from(&roman), 42);
 /// ```
 ///
 /// ```
-/// use intra::Roman;
+/// use intra::roman::Roman;
 /// let invalid = Roman::try_from("XXXXXX");
 /// assert!(invalid.is_err());
 /// ```
