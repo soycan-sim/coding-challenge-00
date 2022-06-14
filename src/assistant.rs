@@ -15,7 +15,7 @@ lazy_static! {
         Regex::new(r"([a-z\s]*)\s+([A-Z]\S*)\s+(?i:is)\s+([0-9]+)\s+(?i:credits)").unwrap();
     static ref QUERY_NUMERAL: Regex = Regex::new(r"(?i:how\s+much\s+is\s+)([a-z\s]*)\?").unwrap();
     static ref QUERY_PRICE: Regex =
-        Regex::new(r"(?i:how\s+many\s+credits\s+is\s+)([a-z\s]*)\s+([A-Z]\S*)\?").unwrap();
+        Regex::new(r"(?i:how\s+many\s+credits\s+is\s+)([a-z\s]*)\s+([A-Z]\S*)\s*\?").unwrap();
 }
 
 /// Fast Omniscient Robotic guiDe is a personal assistant on your hitchhike through the galaxy.
@@ -102,7 +102,7 @@ impl<'a> Ford<'a> {
 
             Ok(None)
         } else if let Some(captures) = QUERY_SET_ITEM.captures(query) {
-            let intergalactic = captures.get(1).unwrap().as_str();
+            let intergalactic = captures.get(1).unwrap().as_str().trim();
             let roman = self.language.translate(intergalactic)?;
             let count = Decimal::from(u32::from(roman));
 
@@ -116,14 +116,14 @@ impl<'a> Ford<'a> {
 
             Ok(None)
         } else if let Some(captures) = QUERY_NUMERAL.captures(query) {
-            let intergalactic = captures.get(1).unwrap().as_str();
+            let intergalactic = captures.get(1).unwrap().as_str().trim();
             let roman = self.language.translate(intergalactic)?;
 
             let decimal = u32::from(roman);
 
             Ok(Some(format!("{intergalactic} is {decimal}")))
         } else if let Some(captures) = QUERY_PRICE.captures(query) {
-            let intergalactic = captures.get(1).unwrap().as_str();
+            let intergalactic = captures.get(1).unwrap().as_str().trim();
             let roman = self.language.translate(intergalactic)?;
             let count = Decimal::from(u32::from(roman));
 
