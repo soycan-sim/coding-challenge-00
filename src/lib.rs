@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 pub mod language;
 pub mod roman;
 
