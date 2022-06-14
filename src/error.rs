@@ -15,6 +15,12 @@ pub enum TranslationError {
     #[allow(missing_docs)]
     #[error("Unrecognized word: `{0}`")]
     UnrecognizedWord(String),
+    #[allow(missing_docs)]
+    #[error("Unrecognized query: `{0}`")]
+    UnrecognizedQuery(String),
+    #[allow(missing_docs)]
+    #[error("Unrecognized item: `{0}`")]
+    UnrecognizedItem(String),
 }
 
 impl From<InvalidRomanNumeral> for TranslationError {

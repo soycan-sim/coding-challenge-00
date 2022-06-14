@@ -16,7 +16,7 @@ fn simple() {
     ]));
 
     let price_set: HashMap<&str, Decimal> =
-        HashMap::from([("Gold", dec!(10)), ("Silver", dec!(10)), ("Iron", dec!(10))]);
+        HashMap::from([("Gold", dec!(10)), ("Silver", dec!(5)), ("Iron", dec!(1))]);
 
     let roman = lang.translate("pish glob prok").unwrap();
     let decimal = u32::from(roman);
@@ -38,9 +38,11 @@ fn query() {
     ]));
 
     let price_set: HashMap<&str, Decimal> =
-        HashMap::from([("Gold", dec!(10)), ("Silver", dec!(10)), ("Iron", dec!(10))]);
+        HashMap::from([("Gold", dec!(10)), ("Silver", dec!(5)), ("Iron", dec!(1))]);
 
-    let shopping_bill = lang.query(&price_set, "How many Credits is pish glob prok Gold?");
+    let shopping_bill = lang
+        .query(&price_set, "How many Credits is pish glob prok Gold?")
+        .unwrap();
 
     assert_eq!(shopping_bill, dec!(140));
 }
