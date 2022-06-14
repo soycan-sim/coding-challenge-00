@@ -23,6 +23,14 @@ impl<'a> Language<'a> {
         Self { map }
     }
 
+    /// Insert a new word-digit pairing.
+    pub fn insert<S>(&mut self, word: S, digit: char)
+    where
+        Cow<'a, str>: From<S>,
+    {
+        self.map.insert(From::from(word), digit);
+    }
+
     /// Translate an intergalactic numeral to `Roman`.
     pub fn translate(&self, text: &str) -> Result<Roman, TranslationError> {
         let text = text

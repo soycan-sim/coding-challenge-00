@@ -10,9 +10,12 @@ use crate::error::TranslationError;
 use crate::language::Language;
 
 lazy_static! {
+    static ref QUERY_SET_DIGIT: Regex = Regex::new(r"([a-z]+)\s+(?i:is)\s+([IVXLCDM])").unwrap();
+    static ref QUERY_SET_ITEM: Regex =
+        Regex::new(r"([a-z\s]*)\s+([A-Z]\S*)\s+(?i:is)\s+([0-9]+)\s+(?i:credits)").unwrap();
     static ref QUERY_NUMERAL: Regex = Regex::new(r"(?i:how\s+much\s+is\s+)([a-z\s]*)\?").unwrap();
     static ref QUERY_PRICE: Regex =
-        Regex::new(r"(?i:how\s+many\s+credits\s+is\s+)([a-z\s]*)\s+([A-Z].*)\?").unwrap();
+        Regex::new(r"(?i:how\s+many\s+credits\s+is\s+)([a-z\s]*)\s+([A-Z]\S*)\?").unwrap();
 }
 
 /// Fast Omniscient Robotic guiDe is a personal assistant on your hitchhike through the galaxy.
@@ -39,10 +42,13 @@ impl<'a> Ford<'a> {
     /// Query the translation of a number or the price of an item.
     ///
     /// Valid queries are of one of the following forms:
+    /// - <number> is <roman digit>
+    /// - <number> <Item> is <decimal> credits
     /// - How much is <number>?
     /// - How many credits is <number> <Item>?
     ///
     /// Numbers must always be all lowercase, while items must always be capitalized.
+    /// Roman digit can be one off: I, V, X, L, C, D, M.
     ///
     /// # Examples
     /// ```
@@ -88,7 +94,28 @@ impl<'a> Ford<'a> {
     /// assert_eq!(ford.query("How many credits is glob glob Gold?").unwrap(), dec!(20));
     /// ```
     pub fn query(&mut self, query: &str) -> Result<Option<String>, TranslationError> {
-        if let Some(captures) = QUERY_NUMERAL.captures(query) {
+        if let Some(captures) = QUERY_SET_DIGIT.captures(query) {
+            let intergalactic = captures.get(1).unwrap().as_str();
+            let roman = captures.get(2).unwrap().as_str().chars().next().unwrap();
+
+            self.language.insert(intergalactic.to_string(), roman);
+
+            Ok(None)
+        } else if let Some(captures) = QUERY_SET_ITEM.captures(query) {
+            let intergalactic = captures.get(1).unwrap().as_str();
+            let roman = self.language.translate(intergalactic)?;
+            let count = Decimal::from(u32::from(roman));
+
+            let item = captures.get(2).unwrap().as_str();
+
+            let price = Decimal::from_str_exact(captures.get(3).unwrap().as_str()).unwrap();
+            let item_price = price / count;
+
+            self.price_set
+                .insert(Cow::from(item.to_string()), item_price);
+
+            Ok(None)
+        } else if let Some(captures) = QUERY_NUMERAL.captures(query) {
             let intergalactic = captures.get(1).unwrap().as_str();
             let roman = self.language.translate(intergalactic)?;
 

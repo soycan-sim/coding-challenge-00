@@ -7,17 +7,19 @@
 //! // necessary imports
 //! use intra::prelude::*;
 //!
+//! // Create a new Ford instance.
+//! let mut ford = Ford::new();
+//!
 //! // Setup your dialect of intergalactic numerals.
-//! let lang = Language::with(HashMap::from([
-//!   (Cow::from("glob"), 'I'),
-//!   (Cow::from("prok"), 'V'),
-//!   (Cow::from("pish"), 'X'),
-//!   (Cow::from("tegj"), 'L'),
-//! ]));
+//! ford.query("glob is I").unwrap();
+//! ford.query("prok is V").unwrap();
+//! ford.query("pish is X").unwrap();
+//! ford.query("tegj is L").unwrap();
 //!
 //! // Setup the prices of items you're interested in.
-//! let price_set: HashMap<&str, Decimal> =
-//!     HashMap::from([("Gold", dec!(10)), ("Silver", dec!(5)), ("Iron", dec!(1))]);
+//! ford.query("glob glob Silver is 34 Credits").unwrap();
+//! ford.query("glob prok Gold is 57800 Credits").unwrap();
+//! ford.query("pish pish Iron is 3910 Credits").unwrap();
 //!
 //! // Query the price...
 //! let price = lang.query(&price_set, "How many credits is glob glob Gold?").unwrap();
