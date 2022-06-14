@@ -8,3 +8,4 @@ description = "The intergalactic numeric translator"
 [dependencies]
 rust_decimal = "1.25"
 rust_decimal_macros = "1.25"
+hashbrown = "0.12"
