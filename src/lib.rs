@@ -28,6 +28,7 @@
 
 #![warn(missing_docs)]
 
+pub mod assistant;
 pub mod error;
 pub mod language;
 pub mod roman;
@@ -41,9 +42,11 @@ pub mod prelude {
     pub use std::borrow::Cow;
 
     // re-export commonly used items from Intra
+    pub use crate::assistant::Ford;
     pub use crate::language::Language;
     pub use crate::roman::Roman;
 }
 
+pub use assistant::Ford;
 pub use language::Language;
 pub use roman::Roman;
