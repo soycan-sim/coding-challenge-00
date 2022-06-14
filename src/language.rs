@@ -3,7 +3,7 @@ use std::borrow::Cow;
 
 use hashbrown::HashMap;
 
-use crate::error::TranslationError;
+use crate::error::QueryError;
 use crate::roman::Roman;
 
 /// `Language` is a mapping of intergalactic numerals to terran Roman numerals.
@@ -23,6 +23,11 @@ impl<'a> Language<'a> {
         Self { map }
     }
 
+    /// Returns an iterator over all known digits.
+    pub fn known_digits(&self) -> impl Iterator<Item = char> + '_ {
+        self.map.values().copied()
+    }
+
     /// Insert a new word-digit pairing.
     pub fn insert<S>(&mut self, word: S, digit: char)
     where
@@ -31,8 +36,13 @@ impl<'a> Language<'a> {
         self.map.insert(From::from(word), digit);
     }
 
+    /// Checks if a word is known.
+    pub fn contains(&self, word: &str) -> bool {
+        self.map.contains_key(word)
+    }
+
     /// Translate an intergalactic numeral to `Roman`.
-    pub fn translate(&self, text: &str) -> Result<Roman, TranslationError> {
+    pub fn translate(&self, text: &str) -> Result<Roman, QueryError> {
         let text = text
             // split at whitespace
             .split(char::is_whitespace)
@@ -42,10 +52,10 @@ impl<'a> Language<'a> {
                 self.map
                     .get(&Cow::from(word))
                     // error if not found
-                    .ok_or_else(|| TranslationError::UnrecognizedWord(word.to_string()))
+                    .ok_or_else(|| QueryError::UnrecognizedWord(word.to_string()))
             })
             // collect into string or first error
-            .collect::<Result<String, TranslationError>>();
+            .collect::<Result<String, QueryError>>();
         // construct a roman numeral
         text.and_then(|text| Ok(Roman::try_from(text)?))
     }

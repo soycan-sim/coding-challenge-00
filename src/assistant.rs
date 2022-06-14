@@ -1,12 +1,12 @@
 //! A personal assistant for all your galaxy hitchhiking needs.
 use std::borrow::Cow;
 
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 use lazy_static::lazy_static;
 use regex::Regex;
 use rust_decimal::Decimal;
 
-use crate::error::TranslationError;
+use crate::error::QueryError;
 use crate::language::Language;
 
 lazy_static! {
@@ -22,6 +22,7 @@ lazy_static! {
 #[derive(Default, Debug)]
 pub struct Ford<'a> {
     language: Language<'a>,
+    known_digits: HashSet<char>,
     price_set: HashMap<Cow<'a, str>, Decimal>,
 }
 
@@ -33,8 +34,10 @@ impl<'a> Ford<'a> {
 
     /// Constructs a new `Ford` with a `Language` and a set of prices.
     pub fn with(language: Language<'a>, price_set: HashMap<Cow<'a, str>, Decimal>) -> Self {
+        let known_digits = language.known_digits().collect();
         Self {
             language,
+            known_digits,
             price_set,
         }
     }
@@ -95,12 +98,21 @@ impl<'a> Ford<'a> {
     /// // Gold costs 10 credits per unit.
     /// ford.query("How many credits is glob glob Gold?").unwrap();
     /// ```
-    pub fn query(&mut self, query: &str) -> Result<Option<String>, TranslationError> {
+    pub fn query(&mut self, query: &str) -> Result<Option<String>, QueryError> {
         if let Some(captures) = QUERY_SET_DIGIT.captures(query) {
             let intergalactic = captures.get(1).unwrap().as_str();
             let roman = captures.get(2).unwrap().as_str().chars().next().unwrap();
 
+            if self.language.contains(intergalactic) {
+                return Err(QueryError::WordAlreadyExists(intergalactic.to_string()));
+            }
+
+            if self.known_digits.contains(&roman) {
+                return Err(QueryError::DigitAlreadyExists(roman));
+            }
+
             self.language.insert(intergalactic.to_string(), roman);
+            self.known_digits.insert(roman);
 
             Ok(None)
         } else if let Some(captures) = QUERY_SET_ITEM.captures(query) {
@@ -109,6 +121,10 @@ impl<'a> Ford<'a> {
             let count = Decimal::from(u32::from(roman));
 
             let item = captures.get(2).unwrap().as_str();
+
+            if self.price_set.contains_key(item) {
+                return Err(QueryError::ItemAlreadyExists(item.to_string()));
+            }
 
             let price = Decimal::from_str_exact(captures.get(3).unwrap().as_str()).unwrap();
             let item_price = price / count;
@@ -133,7 +149,7 @@ impl<'a> Ford<'a> {
             let price = self
                 .price_set
                 .get(&Cow::from(item))
-                .ok_or_else(|| TranslationError::UnrecognizedItem(item.to_string()))?;
+                .ok_or_else(|| QueryError::UnrecognizedItem(item.to_string()))?;
 
             let total_price = count * price;
             let total_price = total_price.normalize();
@@ -142,7 +158,7 @@ impl<'a> Ford<'a> {
                 "{intergalactic} {item} is {total_price} Credits"
             )))
         } else {
-            Err(TranslationError::UnrecognizedQuery(query.to_string()))
+            Err(QueryError::UnrecognizedQuery(query.to_string()))
         }
     }
 }
@@ -187,5 +203,7 @@ mod tests {
         assert!(ford
             .query("How many credits is glob glob glob glob Gold?")
             .is_err());
+        assert!(ford.query("glob is I").is_err());
+        assert!(ford.query("glob Gold is 5 Credits").is_err());
     }
 }
