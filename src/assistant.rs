@@ -12,10 +12,10 @@ use crate::language::Language;
 lazy_static! {
     static ref QUERY_SET_DIGIT: Regex = Regex::new(r"([a-z]+)\s+(?i:is)\s+([IVXLCDM])").unwrap();
     static ref QUERY_SET_ITEM: Regex =
-        Regex::new(r"([a-z\s]*)\s+([A-Z]\S*)\s+(?i:is)\s+([0-9]+)\s+(?i:credits)").unwrap();
+        Regex::new(r"([a-z\s]*)\s+([A-Z].*)\s+(?i:is)\s+([0-9]+)\s+(?i:credits)").unwrap();
     static ref QUERY_NUMERAL: Regex = Regex::new(r"(?i:how\s+much\s+is\s+)([a-z\s]*)\?").unwrap();
     static ref QUERY_PRICE: Regex =
-        Regex::new(r"(?i:how\s+many\s+credits\s+is\s+)([a-z\s]*)\s+([A-Z]\S*)\s*\?").unwrap();
+        Regex::new(r"(?i:how\s+many\s+credits\s+is\s+)([a-z\s]*)\s+([A-Z].*)\s*\?").unwrap();
 }
 
 /// Fast Omniscient Robotic guiDe is a personal assistant on your hitchhike through the galaxy.
@@ -120,7 +120,7 @@ impl<'a> Ford<'a> {
             let roman = self.language.translate(intergalactic)?;
             let count = Decimal::from(u32::from(roman));
 
-            let item = captures.get(2).unwrap().as_str();
+            let item = captures.get(2).unwrap().as_str().trim();
 
             if self.price_set.contains_key(item) {
                 return Err(QueryError::ItemAlreadyExists(item.to_string()));
@@ -145,7 +145,7 @@ impl<'a> Ford<'a> {
             let roman = self.language.translate(intergalactic)?;
             let count = Decimal::from(u32::from(roman));
 
-            let item = captures.get(2).unwrap().as_str();
+            let item = captures.get(2).unwrap().as_str().trim();
             let price = self
                 .price_set
                 .get(&Cow::from(item))
