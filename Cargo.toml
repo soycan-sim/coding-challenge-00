@@ -1,9 +1,12 @@
 [package]
 name = "intra"
 authors = ["Simone Walter <waltersz@protonmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "The intergalactic numeric translator"
+repository = "https://github.com/crabs-n-simone/coding-challenge-00"
+license = "MIT"
+publish = false
 
 [dependencies]
 rust_decimal = "1.25"
